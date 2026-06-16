@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Huella de Carbono Personal + Hábitos Sostenibles | EcoCalc</title>
+    <!-- Fuentes e iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f7ea;
+            color: #1e2f2f;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+
+        /* Header y navegación */
+        header {
+            background: #1e3a2f;
+            color: white;
+            border-radius: 2rem 2rem 2rem 2rem;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #c3e88d;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        nav a {
+            color: #e9f5e3;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #d4f0a3;
+            transform: translateY(-2px);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #e9f5e1 0%, #cde6c0 100%);
+            border-radius: 2rem;
+            padding: 2.2rem 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+        }
+
+        .hero h1 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: #1e3a2f;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 750px;
+            margin: 0 auto;
+            color: #2b4b3e;
+        }
+
+        /* Grid dos columnas (calculadora + consejos) */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Tarjetas */
+        .card {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            border: 1px solid #ddeed4;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #1a4a3a;
+            border-left: 5px solid #6cae50;
+            padding-left: 1rem;
+        }
+
+        .card h2 i {
+            font-size: 1.5rem;
+            color: #4c8b3c;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #2c5a48;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 1.2rem;
+            border: 1.5px solid #d0e2c5;
+            background: #fefef7;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6cae50;
+            box-shadow: 0 0 0 3px rgba(108,174,80,0.2);
+        }
+
+        .btn-calcular {
+            background: #2c7a47;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 0.8rem;
+            font-family: inherit;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .btn-calcular:hover {
+            background: #1e5a38;
+            transform: scale(0.98);
+        }
+
+        /* Resultado huella */
+        .resultado {
+            background: #eef6e9;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin: 1.4rem 0 0.8rem;
+            text-align: center;
+        }
+
+        .huella-valor {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e5a38;
+        }
+
+        .huella-clasificacion {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Consejos sostenibles */
+        .consejos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.2rem 0 0.5rem;
+        }
+
+        .consejo-item {
+            background: #f9fff7;
+            padding: 1rem 1rem;
+            border-radius: 1.2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            border-left: 4px solid #7cb342;
+        }
+
+        .consejo-item i {
+            font-size: 1.4rem;
+            color: #558b2f;
+            margin-top: 0.2rem;
+        }
+
+        .consejo-text p {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .consejo-text small {
+            color: #5f7e5a;
+            font-size: 0.8rem;
+        }
+
+        /* Sección tips de impacto */
+        .tips-impacto {
+            background: #fef5e8;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            border: 1px solid #ffe0b5;
+        }
+
+        .tips-impacto h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .tips-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .tip-card {
+            background: white;
+            border-radius: 1.3rem;
+            padding: 1rem;
+            flex: 1;
+            min-width: 160px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #e2f0da;
+        }
+
+        .tip-card i {
+            font-size: 2rem;
+            color: #447e38;
+        }
+
+        /* footer */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #cfe2c6;
+            color: #517a46;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .two-col {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        button, .btn-calcular {
+            transition: all 0.2s ease;
+        }
+
+        small {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.7rem;
+            color: #6f8e66;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">
+            <i class="fas fa-leaf"></i>
+            <span>EcoCalc<span style="font-weight:400"> · Huella Personal</span></span>
+        </div>
+        <nav>
+            <a href="#calculadora"><i class="fas fa-calculator"></i> Calculadora</a>
+            <a href="#sostenible"><i class="fas fa-seedling"></i> Hábitos</a>
+            <a href="#tips"><i class="fas fa-chart-line"></i> Consejos</a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>🌍 Conoce y reduce tu huella de carbono</h1>
+        <p>Pequeñas acciones generan grandes cambios. Calcula tus emisiones anuales estimadas y descubre hábitos sostenibles para un futuro más verde.</p>
+    </div>
+
+    <!-- Sección principal: calculadora + tips personalizados hábitos -->
+    <div class="two-col" id="calculadora">
+        <!-- Columna calculadora -->
+        <div class="card">
+            <h2><i class="fas fa-calculator"></i> Calculadora de carbono</h2>
+            <p style="margin-bottom: 1rem; font-size: 0.9rem;">Introduce tus hábitos promedio anuales. Obtendrás tus emisiones de CO₂e (kg/año).</p>
+            <form id="carbonForm">
+                <div class="form-group">
+                    <label><i class="fas fa-car"></i> Transporte (km/año en coche)</label>
+                    <input type="number" id="kmCoche" value="8000" step="500" placeholder="Ej: 8000 km">
+                    <small>Emisiones medias: 0.192 kg CO₂/km (gasolina)</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-plane"></i> Vuelos (horas de vuelo/año)</label>
+                    <input type="number" id="horasVuelo" value="5" step="1" placeholder="Ej: 5 horas">
+                    <small>Emisiones ≈ 90 kg CO₂/hora (clase turista)</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-bolt"></i> Consumo eléctrico (kWh/mes)</label>
+                    <input type="number" id="electricidadKwh" value="250" step="20" placeholder="kWh/mes">
+                    <small>Factor mix eléctrico España: 0.21 kg CO₂/kWh (aprox)</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-utensils"></i> Dieta (carne roja)</label>
+                    <select id="dieta">
+                        <option value="alta">Alta carne roja (>4 veces/semana) +10% extra</option>
+                        <option value="media" selected>Consumo medio (2-3 veces/semana) - referencia</option>
+                        <option value="baja">Baja carne / vegetariana -20% huella base alimentaria</option>
+                        <option value="vegana">Vegana -35% huella alimentaria</option>
+                    </select>
+                    <small>Base alimentaria estimada: 850 kg CO₂e/año. Ajuste según dieta.</small>
+                </div>
+                <button type="button" id="calcularBtn" class="btn-calcular"><i class="fas fa-chart-simple"></i> Calcular mi huella</button>
+            </form>
+            <div id="resultadoHuella" class="resultado">
+                <span style="font-weight:600; opacity:0.8;">Tu huella anual de carbono</span>
+                <div class="huella-valor" id="huellaNumero">---</div>
+                <div id="clasificacionTexto" class="huella-clasificacion">Completa los datos y presiona calcular</div>
+                <div id="comparativaMundo" style="font-size:0.8rem; margin-top:8px;"></div>
+            </div>
+        </div>
+
+        <!-- Columna hábitos sostenibles dinámicos + tips -->
+        <div class="card" id="sostenible">
+            <h2><i class="fas fa-hand-sparkles"></i> Hábitos sostenibles recomendados</h2>
+            <p>Basado en tu estilo de vida, te sugerimos estas prácticas para compensar y reducir tu huella.</p>
+            <div id="consejosPersonalizados" class="consejos-list">
+                <!-- Los consejos se actualizan dinámicamente según la huella calculada -->
+                <div class="consejo-item">
+                    <i class="fas fa-recycle"></i>
+                    <div class="consejo-text"><p>Reduce, reutiliza y recicla correctamente.</p><small>Evita enviar residuos al vertedero.</small></div>
+                </div>
+                <div class="consejo-item">
+                    <i class="fas fa-tree"></i>
+                    <div class="consejo-text"><p>Planta un árbol o apoya proyectos de reforestación.</p><small>Cada árbol captura ~22 kg CO₂/año.</small></div>
+                </div>
+                <div class="consejo-item">
+                    <i class="fas fa-walking"></i>
+                    <div class="consejo-text"><p>Opta por transporte público, bicicleta o comparte coche.</p><small>Reduce hasta 2 toneladas CO₂/año.</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de tips destacados y huella media -->
+    <div class="tips-impacto" id="tips">
+        <h3><i class="fas fa-lightbulb"></i> hábitos sostenibles de alto impacto</h3>
+        <div class="tips-grid">
+            <div class="tip-card"><i class="fas fa-charging-station"></i><br><strong>Electrodomésticos eficientes</strong><br><small>Ahorra hasta 300 kg CO₂/año</small></div>
+            <div class="tip-card"><i class="fas fa-water"></i><br><strong>Consumo local</strong><br><small>Reduce transporte de alimentos</small></div>
+            <div class="tip-card"><i class="fas fa-solar-panel"></i><br><strong>Energía renovable</strong><br><small>Cambia a proveedor verde</small></div>
+            <div class="tip-card"><i class="fas fa-train"></i><br><strong>Tren vs avión</strong><br><small>Hasta 90% menos emisiones</small></div>
+        </div>
+        <p style="margin-top: 1rem; font-size:0.9rem; background:#eef1e2; padding:0.6rem; border-radius:2rem; text-align:center;">
+            🌱 Huella media mundial ≈ 4.8 ton CO₂ por persona/año. 🌱 El objetivo para 2030 es <strong>2 toneladas</strong>.
+        </p>
+    </div>
+
+    <!-- Información adicional sobre compromiso verde -->
+    <div style="background: #e0efd8; border-radius: 1.8rem; padding: 1.6rem; margin-bottom: 1rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 1.8rem; align-items: center; justify-content: space-between;">
+            <div><i class="fas fa-globe-americas" style="font-size: 2rem; color:#2f6b47;"></i></div>
+            <div><strong>+Acciones climáticas:</strong> Apaga luces, reduce plásticos, composta, ahorra agua, y compensa tus vuelos. Cada gesto cuenta.</div>
+            <div><i class="fas fa-heart" style="color:#c44536;"></i> #PorElClima</div>
+        </div>
+    </div>
+    <footer>
+        <i class="fas fa-seedling"></i> EcoCalc · Información con fines educativos. Los valores de emisión son estimados según estándares europeos. <br>
+        Pequeños cambios diarios generan un gran impacto colectivo.
+    </footer>
+</div>
+
+<script>
+    // Factores de emisión ajustados (kg CO₂e por unidad)
+    const FACTOR_COCHE = 0.192;        // kg CO₂ por km (gasolina promedio)
+    const FACTOR_VUELO_HORA = 90;       // kg CO₂ por hora de vuelo (corto-medio recorrido)
+    const FACTOR_ELECTRICIDAD = 0.21;   // kg CO₂ por kWh (mix España)
+    const BASE_ALIMENTARIA = 850;       // kg CO₂e/año dieta media estándar
+
+    // Ajustes dietéticos (multiplicadores sobre la base alimentaria)
+    const DIETA_FACTORES = {
+        alta: 1.25,      // +25% más de emisiones (mayor consumo carne roja)
+        media: 1.0,
+        baja: 0.8,       // -20%
+        vegana: 0.65     // -35%
+    };
+
+    // Elementos del DOM
+    const kmInput = document.getElementById('kmCoche');
+    const horasVueloInput = document.getElementById('horasVuelo');
+    const electricidadInput = document.getElementById('electricidadKwh');
+    const dietaSelect = document.getElementById('dieta');
+    const calcularBtn = document.getElementById('calcularBtn');
+    const huellaNumeroSpan = document.getElementById('huellaNumero');
+    const clasificacionDiv = document.getElementById('clasificacionTexto');
+    const comparativaSpan = document.getElementById('comparativaMundo');
+    const consejosContainer = document.getElementById('consejosPersonalizados');
+
+    // Función para calcular huella total (kg CO₂e/año)
+    function calcularHuellaTotal() {
+        // leer valores numéricos
+        let km = parseFloat(kmInput.value);
+        let horas = parseFloat(horasVueloInput.value);
+        let kwhMes = parseFloat(electricidadInput.value);
+        let dietaTipo = dietaSelect.value;
+
+        if (isNaN(km)) km = 0;
+        if (isNaN(horas)) horas = 0;
+        if (isNaN(kwhMes)) kwhMes = 0;
+
+        // Emisiones transporte coche (kg)
+        const emisionesCoche = km * FACTOR_COCHE;
+        // Emisiones vuelos
+        const emisionesVuelos = horas * FACTOR_VUELO_HORA;
+        // Emisiones electricidad anual (kWh mes * 12 * factor)
+        const emisionesElectricidad = (kwhMes * 12) * FACTOR_ELECTRICIDAD;
+
+        // Alimentación
+        let factorDieta = DIETA_FACTORES[dietaTipo] || 1.0;
+        let emisionesAlimentacion = BASE_ALIMENTARIA * factorDieta;
+
+        // Total kg CO₂e
+        let totalKg = emisionesCoche + emisionesVuelos + emisionesElectricidad + emisionesAlimentacion;
+        // Redondear a entero
+        totalKg = Math.round(totalKg);
+        return totalKg;
+    }
+
+    // Actualizar todos los contenidos según la huella calculada
+    function actualizarResultadosYConsejos() {
+        let totalKg = calcularHuellaTotal();
+        let totalToneladas = (totalKg / 1000).toFixed(2);
+        huellaNumeroSpan.innerText = totalKg.toLocaleString() + " kg CO₂e";
+        
+        // Texto de clasificación y recomendación general
+        let mensajeClasificacion = "";
+        if (totalKg < 2500) {
+            mensajeClasificacion = "🌟 ¡Muy baja huella! Eres un ejemplo de sostenibilidad. Continúa inspirando.";
+        } else if (totalKg < 5000) {
+            mensajeClasificacion = "🌿 Huella moderada. Buenos hábitos, pero hay margen de mejora. Reduce vuelos o usa más transporte público.";
+        } else if (totalKg < 8000) {
+            mensajeClasificacion = "⚠️ Huella por encima de la media. Revisa transporte y eficiencia energética.";
+        } else {
+            mensajeClasificacion = "🌎 Huella muy alta. Cada acción cuenta: disminuye el coche, el consumo eléctrico y la carne roja.";
+        }
+        clasificacionDiv.innerText = mensajeClasificacion;
+        
+        // Comparativa global
+        let tonMediaMundo = 4.8;
+        let diferencia = (totalKg/1000 - tonMediaMundo).toFixed(1);
+        if (totalKg/1000 > tonMediaMundo) {
+            comparativaSpan.innerHTML = `📊 Superas la media mundial (${tonMediaMundo} tCO₂/año) en ${Math.abs(diferencia)} toneladas. ¡Reduce tu impacto!`;
+        } else {
+            comparativaSpan.innerHTML = `🌱 Estás por debajo de la media mundial (${tonMediaMundo} tCO₂/año). ¡Sigue así!`;
+        }
+
+        // ---------- Consejos personalizados (dinámicos) según componentes del cálculo ------
+        // recogemos valores actuales para consejos específicos
+        let km = parseFloat(kmInput.value) || 0;
+        let horas = parseFloat(horasVueloInput.value) || 0;
+        let kwhMes = parseFloat(electricidadInput.value) || 0;
+        let dieta = dietaSelect.value;
+        
+        let consejosArray = [];
+        
+        // Consejo transporte coche
+        if (km > 5000) {
+            consejosArray.push({
+                icono: "fas fa-bicycle",
+                titulo: "🚲 Reduce el uso del coche",
+                desc: "Usa bici o transporte público. Compartir vehículo reduce emisiones hasta un 40%."
+            });
+        } else if (km > 2000) {
+            consejosArray.push({
+                icono: "fas fa-car-side",
+                titulo: "🚗 Optimiza tus viajes",
+                desc: "Planifica rutas, mantenimiento adecuado y conducción eficiente ahorra combustible."
+            });
+        } else {
+            consejosArray.push({
+                icono: "fas fa-person-walking",
+                titulo: "🚶 ¡Buen trabajo en movilidad!",
+                desc: "Sigue priorizando caminar o transporte limpio."
+            });
+        }
+        
+        // Consejo vuelos
+        if (horas > 8) {
+            consejosArray.push({
+                icono: "fas fa-plane-slash",
+                titulo: "✈️ Compensa tus vuelos",
+                desc: "Evita vuelos cortos, prefiere tren. Si vuelas, compensa con proyectos de carbono."
+            });
+        } else if (horas > 2) {
+            consejosArray.push({
+                icono: "fas fa-tree",
+                titulo: "🌳 Neutraliza vuelos",
+                desc: "Planta árboles o dona a iniciativas climáticas para mitigar tu huella aérea."
+            });
+        } else {
+            consejosArray.push({
+                icono: "fas fa-train",
+                titulo: "Alternativas verdes",
+                desc: "Para distancias medias el tren emite hasta un 90% menos que el avión."
+            });
+        }
+        
+        // Consejo electricidad
+        if (kwhMes > 300) {
+            consejosArray.push({
+                icono: "fas fa-plug",
+                titulo: "⚡ Ahorro energético",
+                desc: "Electrodomésticos clase A+++, bombillas LED y desconectar 'vampiros eléctricos'."
+            });
+        } else if (kwhMes > 150) {
+            consejosArray.push({
+                icono: "fas fa-solar-panel",
+                titulo: "Energía renovable",
+                desc: "Cambia a tarifa verde o instala paneles solares si es posible."
+            });
+        } else {
+            consejosArray.push({
+                icono: "fas fa-charging-station",
+                titulo: "Bajo consumo eléctrico",
+                desc: "Gran hábito, revisa que los equipos sean eficientes para mantenerlo."
+            });
+        }
+        
+        // Consejo alimentación sostenible
+        if (dieta === "alta") {
+            consejosArray.push({
+                icono: "fas fa-carrot",
+                titulo: "🥩 Reduce consumo de carne roja",
+                desc: "Disminuir a 1-2 veces por semana baja hasta 500 kg CO₂ anuales."
+            });
+        } else if (dieta === "media") {
+            consejosArray.push({
+                icono: "fas fa-apple-alt",
+                titulo: "🌽 Alimentación balanceada",
+                desc: "Intenta aumentar vegetales y productos de proximidad. La dieta vegetariana reduce huella un 20-35%."
+            });
+        } else {
+            consejosArray.push({
+                icono: "fas fa-seedling",
+                titulo: "🥗 Excelente dieta baja en carbono",
+                desc: "¡Eres un referente! Comparte recetas y apoya la agricultura ecológica."
+            });
+        }
+        
+        // Consejo adicional general: residuos y consumo
+        consejosArray.push({
+            icono: "fas fa-trash-alt",
+            titulo: "Gestión de residuos",
+            desc: "Reciclar vidrio, papel y orgánico; evita plásticos de un solo uso."
+        });
+
+        // Aseguramos máximo 5 consejos para no saturar, pero mostramos todos los relevantes (cortamos si más de 6)
+        if (consejosArray.length > 6) consejosArray = consejosArray.slice(0,6);
+        
+        // Renderizar consejos en el contenedor
+        consejosContainer.innerHTML = "";
+        consejosArray.forEach(consejo => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "consejo-item";
+            itemDiv.innerHTML = `
+                <i class="${consejo.icono}"></i>
+                <div class="consejo-text">
+                    <p>${consejo.titulo}</p>
+                    <small>${consejo.desc}</small>
+                </div>
+            `;
+            consejosContainer.appendChild(itemDiv);
+        });
+        
+        // Si por algún motivo no hay consejos, colocar uno por defecto
+        if (consejosArray.length === 0) {
+            consejosContainer.innerHTML = `<div class="consejo-item"><i class="fas fa-hand-holding-heart"></i><div class="consejo-text"><p>¡Sigue hábitos sostenibles!</p><small>Cada decisión cuenta para frenar el cambio climático.</small></div></div>`;
+        }
+    }
+
+    // Evento del botón calcular
+    calcularBtn.addEventListener('click', () => {
+        actualizarResultadosYConsejos();
+    });
+
+    // También al cargar la página mostrar resultados iniciales con valores por defecto
+    window.addEventListener('DOMContentLoaded', () => {
+        actualizarResultadosYConsejos();
+    });
+    
+    // Opcional: si se desea, también se puede recalcular al modificar los inputs, pero mejor con botón explícito
+    // Añadimos listeners extra para mejorar UX? (pero botón es suficiente)
+    const inputs = [kmInput, horasVueloInput, electricidadInput, dietaSelect];
+    inputs.forEach(input => {
+        input.addEventListener('change', () => {
+            // no actualiza automáticamente para evitar sobrecarga, pero el usuario debe hacer clic.
+            // pero podríamos también actualizar automático suave si se desea, sin embargo mantenemos coherencia.
+            // Por comodidad pondremos una leve actualización solo visual (resultado no se recalcula hasta clic)
+            // dejamos el botón como acción principal, aunque mejor experiencia: cambio suave 
+        });
+    });
+    // Bonus: si alguien pulsa enter dentro de algún input, ejecutar cálculo
+    const formElement = document.getElementById('carbonForm');
+    formElement.addEventListener('submit', (e) => {
+        e.preventDefault();
+        actualizarResultadosYConsejos();
+    });
+    
+</script>
+</body>
+</html>
