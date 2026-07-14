@@ -388,7 +388,7 @@
 </head>
 <body>
 <div class="container">
-    <!-- Header -->
+
     <div class="header">
         <h1>
             <i class="fas fa-chart-line"></i>
@@ -519,9 +519,7 @@
 </div>
 
 <script>
-    // ============================================
-    // CONSTANTES (mismos factores que en la calculadora)
-    // ============================================
+
     const FACTOR_COCHE = 0.192;
     const FACTOR_MOTO = 0.089;
     const FACTOR_VUELO_HORA = 90;
@@ -534,16 +532,11 @@
         vegana: 0.65
     };
 
-    // ============================================
-    // VARIABLES GLOBALES
-    // ============================================
+
     let registros = [];
     let chartInstance = null;
     let idEditando = null;
 
-    // ============================================
-    // FUNCIONES DE DATOS
-    // ============================================
     function cargarDatos() {
         try {
             const stored = localStorage.getItem('ecocalc_historial');
@@ -580,9 +573,7 @@
         return Math.round(emisionesCoche + emisionesMoto + emisionesVuelos + emisionesElectricidad + emisionesAlimentacion);
     }
 
-    // ============================================
-    // ACTUALIZAR UI COMPLETA
-    // ============================================
+
     function actualizarUI() {
         if (registros.length === 0) {
             // Estado vacío
@@ -696,9 +687,7 @@
         actualizarGrafica(registros);
     }
 
-    // ============================================
-    // GRÁFICA CON CHART.JS
-    // ============================================
+
     function actualizarGrafica(datos) {
         const ctx = document.getElementById('huellaChart').getContext('2d');
         
@@ -848,9 +837,6 @@
         });
     }
 
-    // ============================================
-    // MODAL DE EDICIÓN
-    // ============================================
     function abrirModalEditar(id) {
         const registro = registros.find(r => r.id == id);
         if (!registro) return;
@@ -899,9 +885,6 @@
         idEditando = null;
     }
 
-    // ============================================
-    // GUARDAR EDICIÓN
-    // ============================================
     document.getElementById('formEditar').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -926,9 +909,7 @@
         mostrarNotificacion('✅ Registro actualizado correctamente');
     });
 
-    // ============================================
-    // ELIMINAR REGISTRO
-    // ============================================
+
     function eliminarRegistro(id) {
         if (!confirm('¿Estás seguro de que quieres eliminar este registro?')) return;
         
@@ -948,9 +929,6 @@
         mostrarNotificacion('🗑️ Todos los registros han sido eliminados');
     }
 
-    // ============================================
-    // EXPORTAR CSV
-    // ============================================
     function exportarDatos() {
         if (registros.length === 0) {
             alert('No hay datos para exportar.');
@@ -973,9 +951,6 @@
         mostrarNotificacion('📊 Datos exportados correctamente');
     }
 
-    // ============================================
-    // NOTIFICACIONES
-    // ============================================
     function mostrarNotificacion(mensaje) {
         const notif = document.createElement('div');
         notif.style.cssText = `
@@ -1001,9 +976,6 @@
         }, 3000);
     }
 
-    // ============================================
-    // INICIALIZACIÓN
-    // ============================================
     window.addEventListener('DOMContentLoaded', () => {
         cargarDatos();
         // Recargar automáticamente cada 30 segundos (por si se guarda desde otra pestaña)

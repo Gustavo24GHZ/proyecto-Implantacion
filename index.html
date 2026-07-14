@@ -379,14 +379,8 @@
         });
     }
 
-    // ============================================
-    // FUNCIÓN PARA GUARDAR EN BASE DE DATOS
-    // ============================================
     function guardarEnBaseDeDatos(datos) {
-        // ============================================
-        // OPCIÓN 1: SIMULACIÓN CON LocalStorage
-        // (Para pruebas sin necesidad de servidor)
-        // ============================================
+
         try {
             // Obtener historial existente
             let historial = JSON.parse(localStorage.getItem('ecocalc_historial') || '[]');
@@ -410,33 +404,6 @@
             return false;
         }
 
-        // ============================================
-        // OPCIÓN 2: GUARDAR EN BASE DE DATOS REAL (API)
-        // (Descomenta y configura si tienes backend)
-        // ============================================
-        /*
-        fetch('https://tu-api.com/guardar-huella', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(datos)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('✅ Datos guardados en servidor:', data);
-            mostrarMensajeExito();
-        })
-        .catch(error => {
-            console.error('❌ Error guardando en servidor:', error);
-            alert('Error al guardar en la base de datos. Revisa tu conexión.');
-        });
-        */
-    }
-
-    // ============================================
-    // MOSTRAR MENSAJE DE ÉXITO
-    // ============================================
     function mostrarMensajeExito() {
         const mensaje = document.getElementById('mensajeGuardado');
         mensaje.classList.add('visible');
@@ -445,9 +412,6 @@
         }, 5000);
     }
 
-    // ============================================
-    // EVENT LISTENERS
-    // ============================================
     calcularBtn.addEventListener('click', () => {
         actualizarResultadosYConsejos();
     });
