@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Huella de Carbono | EcoCalc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js para gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f7ea;
+            color: #1e2f2f;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a2f, #2a5a4a);
+            color: white;
+            padding: 2rem;
+            border-radius: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 i {
+            color: #a8d68a;
+        }
+
+        .btn-volver {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-volver:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-volver i {
+            margin-right: 0.5rem;
+        }
+
+        /* Grid principal */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid #ddeed4;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #1a4a3a;
+            border-left: 4px solid #6cae50;
+            padding-left: 1rem;
+        }
+
+        .card h2 i {
+            color: #4c8b3c;
+        }
+
+        /* Gráfica */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 0.5rem;
+        }
+
+        /* Estadísticas rápidas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: #f8fbf6;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            text-align: center;
+            border: 1px solid #e3f0da;
+        }
+
+        .stat-item .numero {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e5a38;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: #5f7e5a;
+            font-weight: 500;
+            margin-top: 0.2rem;
+        }
+
+        .stat-item .trend {
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .trend-up { color: #d9534f; }
+        .trend-down { color: #5cb85c; }
+        .trend-neutral { color: #f0ad4e; }
+
+        /* Lista de registros */
+        .registros-lista {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+
+        .registro-item {
+            background: #f9fff7;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #7cb342;
+            transition: 0.2s;
+        }
+
+        .registro-item:hover {
+            background: #f0f9ec;
+        }
+
+        .registro-item .info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .registro-item .fecha {
+            font-size: 0.75rem;
+            color: #6f8e66;
+        }
+
+        .registro-item .valor {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e5a38;
+        }
+
+        .registro-item .acciones {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.8rem;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon:hover {
+            background: #e8f0e4;
+        }
+
+        .btn-icon.editar { color: #2a5f7a; }
+        .btn-icon.eliminar { color: #d9534f; }
+
+        .btn-icon.editar:hover { background: #d4e4f0; }
+        .btn-icon.eliminar:hover { background: #fce4e4; }
+
+        /* Modal de edición */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: #1e3a2f;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-content label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #2c5a48;
+            font-size: 0.9rem;
+        }
+
+        .modal-content input, 
+        .modal-content select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 1rem;
+            border: 1.5px solid #d0e2c5;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #6cae50;
+            box-shadow: 0 0 0 3px rgba(108,174,80,0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-guardar-modal {
+            background: #2c7a47;
+            color: white;
+        }
+
+        .btn-guardar-modal:hover {
+            background: #1e5a38;
+        }
+
+        .btn-cancelar-modal {
+            background: #e8ece6;
+            color: #2c5a48;
+        }
+
+        .btn-cancelar-modal:hover {
+            background: #d5ddd0;
+        }
+
+        /* Estado vacío */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6f8e66;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        .footer-dashboard {
+            text-align: center;
+            padding: 1.5rem;
+            color: #517a46;
+            font-size: 0.85rem;
+            border-top: 1px solid #cfe2c6;
+            margin-top: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Scrollbar */
+        .registros-lista::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .registros-lista::-webkit-scrollbar-track {
+            background: #eef6e9;
+            border-radius: 10px;
+        }
+
+        .registros-lista::-webkit-scrollbar-thumb {
+            background: #a8c89a;
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .header { flex-direction: column; text-align: center; }
+            .header h1 { font-size: 1.5rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>
+            <i class="fas fa-chart-line"></i>
+            Mi Dashboard de Huella de Carbono
+        </h1>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="#" class="btn-volver" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i> Volver a Calculadora
+            </a>
+            <button class="btn-volver" onclick="exportarDatos()" style="background: rgba(255,255,255,0.15);">
+                <i class="fas fa-download"></i> Exportar CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Columna izquierda: Gráfica + Estadísticas -->
+        <div>
+            <!-- Gráfica -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2><i class="fas fa-chart-area"></i> Evolución de tu huella</h2>
+                <div class="chart-container">
+                    <canvas id="huellaChart"></canvas>
+                </div>
+                <div style="margin-top: 0.8rem; font-size: 0.85rem; color: #6f8e66; text-align: center;">
+                    <span id="tendenciaTexto">🔄 No hay suficientes datos para mostrar tendencia</span>
+                </div>
+            </div>
+
+            <!-- Estadísticas rápidas -->
+            <div class="card">
+                <h2><i class="fas fa-chart-simple"></i> Resumen estadístico</h2>
+                <div class="stats-grid" id="statsContainer">
+                    <div class="stat-item">
+                        <div class="numero" id="statPromedio">--</div>
+                        <div class="label">Promedio (kg CO₂e)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="numero" id="statActual">--</div>
+                        <div class="label">Último registro</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="numero" id="statMinimo">--</div>
+                        <div class="label">Mínimo histórico</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="numero" id="statMaximo">--</div>
+                        <div class="label">Máximo histórico</div>
+                    </div>
+                </div>
+                <div id="mejoraTotal" style="text-align: center; padding: 0.8rem; background: #f8fbf6; border-radius: 1rem; font-weight: 500;">
+                    💪 Compara tu primer registro con el último para ver tu evolución
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Lista de registros -->
+        <div class="card">
+            <h2><i class="fas fa-list"></i> Historial de registros</h2>
+            <div id="registrosContainer" class="registros-lista">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No hay registros guardados aún.</p>
+                    <p style="font-size: 0.85rem;">Calcula tu huella y guarda los resultados desde la calculadora.</p>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                <button onclick="cargarDatos()" class="btn-volver" style="background: #2c7a47; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 2rem; cursor: pointer; flex: 1;">
+                    <i class="fas fa-sync"></i> Recargar datos
+                </button>
+                <button onclick="borrarTodosLosRegistros()" class="btn-volver" style="background: #d9534f; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 2rem; cursor: pointer; flex: 1;">
+                    <i class="fas fa-trash-alt"></i> Borrar todo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-dashboard">
+        <i class="fas fa-seedling"></i> EcoCalc · Seguimiento de tu huella de carbono. Cada registro cuenta tu progreso hacia la sostenibilidad.
+    </div>
+</div>
+
+<!-- Modal de edición -->
+<div class="modal" id="modalEditar">
+    <div class="modal-content">
+        <h2><i class="fas fa-edit"></i> Editar registro</h2>
+        <form id="formEditar">
+            <div class="form-group">
+                <label><i class="fas fa-calendar"></i> Fecha</label>
+                <input type="datetime-local" id="editFecha">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-car"></i> Coche (km/año)</label>
+                <input type="number" id="editKmCoche" step="500">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-motorcycle"></i> Moto (km/año)</label>
+                <input type="number" id="editKmMoto" step="500">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-plane"></i> Vuelos (horas/año)</label>
+                <input type="number" id="editHorasVuelo" step="1">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-bolt"></i> Electricidad (kWh/mes)</label>
+                <input type="number" id="editElectricidad" step="20">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-utensils"></i> Dieta</label>
+                <select id="editDieta">
+                    <option value="alta">Alta carne roja</option>
+                    <option value="media">Consumo medio</option>
+                    <option value="baja">Baja carne / vegetariana</option>
+                    <option value="vegana">Vegana</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-weight"></i> Total (kg CO₂e) - <strong>se recalcula automáticamente</strong></label>
+                <input type="text" id="editTotal" readonly style="background: #f0f7ea; font-weight: 700;">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar-modal" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn-guardar-modal"><i class="fas fa-save"></i> Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // CONSTANTES (mismos factores que en la calculadora)
+    // ============================================
+    const FACTOR_COCHE = 0.192;
+    const FACTOR_MOTO = 0.089;
+    const FACTOR_VUELO_HORA = 90;
+    const FACTOR_ELECTRICIDAD = 0.21;
+    const BASE_ALIMENTARIA = 850;
+    const DIETA_FACTORES = {
+        alta: 1.25,
+        media: 1.0,
+        baja: 0.8,
+        vegana: 0.65
+    };
+
+    // ============================================
+    // VARIABLES GLOBALES
+    // ============================================
+    let registros = [];
+    let chartInstance = null;
+    let idEditando = null;
+
+    // ============================================
+    // FUNCIONES DE DATOS
+    // ============================================
+    function cargarDatos() {
+        try {
+            const stored = localStorage.getItem('ecocalc_historial');
+            if (stored) {
+                registros = JSON.parse(stored);
+                // Ordenar por fecha (más antiguo primero para la gráfica)
+                registros.sort((a, b) => new Date(a.guardado || a.fecha) - new Date(b.guardado || b.fecha));
+            } else {
+                registros = [];
+            }
+            actualizarUI();
+        } catch (error) {
+            console.error('Error cargando datos:', error);
+            registros = [];
+            actualizarUI();
+        }
+    }
+
+    function guardarDatos() {
+        try {
+            localStorage.setItem('ecocalc_historial', JSON.stringify(registros));
+        } catch (error) {
+            console.error('Error guardando datos:', error);
+            alert('Error al guardar los datos.');
+        }
+    }
+
+    function calcularTotal(registro) {
+        const emisionesCoche = (registro.kmCoche || 0) * FACTOR_COCHE;
+        const emisionesMoto = (registro.kmMoto || 0) * FACTOR_MOTO;
+        const emisionesVuelos = (registro.horas || 0) * FACTOR_VUELO_HORA;
+        const emisionesElectricidad = ((registro.kwhMes || 0) * 12) * FACTOR_ELECTRICIDAD;
+        const emisionesAlimentacion = BASE_ALIMENTARIA * (DIETA_FACTORES[registro.dietaTipo] || 1.0);
+        return Math.round(emisionesCoche + emisionesMoto + emisionesVuelos + emisionesElectricidad + emisionesAlimentacion);
+    }
+
+    // ============================================
+    // ACTUALIZAR UI COMPLETA
+    // ============================================
+    function actualizarUI() {
+        if (registros.length === 0) {
+            // Estado vacío
+            document.getElementById('registrosContainer').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No hay registros guardados aún.</p>
+                    <p style="font-size: 0.85rem;">Calcula tu huella y guarda los resultados desde la calculadora.</p>
+                </div>
+            `;
+            document.getElementById('statPromedio').textContent = '--';
+            document.getElementById('statActual').textContent = '--';
+            document.getElementById('statMinimo').textContent = '--';
+            document.getElementById('statMaximo').textContent = '--';
+            document.getElementById('mejoraTotal').innerHTML = '💪 No hay datos suficientes para mostrar evolución.';
+            document.getElementById('tendenciaTexto').textContent = '📊 Sin datos para mostrar tendencia';
+            actualizarGrafica([]);
+            return;
+        }
+
+        // --- Lista de registros ---
+        const container = document.getElementById('registrosContainer');
+        container.innerHTML = '';
+        // Mostrar más reciente primero en la lista
+        const registrosRecientes = [...registros].reverse();
+        registrosRecientes.forEach((reg, index) => {
+            const div = document.createElement('div');
+            div.className = 'registro-item';
+            const fecha = new Date(reg.guardado || reg.fecha);
+            const fechaStr = fecha.toLocaleString('es-ES', { 
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            const total = reg.total || calcularTotal(reg);
+            div.innerHTML = `
+                <div class="info">
+                    <div class="valor">${total.toLocaleString()} kg CO₂e</div>
+                    <div class="fecha"><i class="far fa-calendar-alt"></i> ${fechaStr}</div>
+                    ${reg.kmCoche !== undefined ? `<div style="font-size:0.7rem; color:#6f8e66;">🚗 ${reg.kmCoche}km · 🛵 ${reg.kmMoto || 0}km · ✈️ ${reg.horas || 0}h</div>` : ''}
+                </div>
+                <div class="acciones">
+                    <button class="btn-icon editar" onclick="abrirModalEditar('${reg.id}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon eliminar" onclick="eliminarRegistro('${reg.id}')" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        // --- Estadísticas ---
+        const totales = registros.map(r => r.total || calcularTotal(r));
+        const promedio = Math.round(totales.reduce((a, b) => a + b, 0) / totales.length);
+        const actual = totales[totales.length - 1];
+        const minimo = Math.min(...totales);
+        const maximo = Math.max(...totales);
+
+        document.getElementById('statPromedio').textContent = promedio.toLocaleString();
+        document.getElementById('statActual').textContent = actual.toLocaleString();
+        document.getElementById('statMinimo').textContent = minimo.toLocaleString();
+        document.getElementById('statMaximo').textContent = maximo.toLocaleString();
+
+        // --- Mejora total ---
+        if (registros.length >= 2) {
+            const primero = totales[0];
+            const ultimo = totales[totales.length - 1];
+            const diferencia = primero - ultimo;
+            const porcentaje = ((diferencia / primero) * 100).toFixed(1);
+            let icono, mensaje, clase;
+            if (diferencia > 0) {
+                icono = '📉';
+                mensaje = `¡Has reducido tu huella en ${diferencia.toLocaleString()} kg (${porcentaje}%)!`;
+                clase = 'trend-down';
+            } else if (diferencia < 0) {
+                icono = '📈';
+                mensaje = `Tu huella ha aumentado en ${Math.abs(diferencia).toLocaleString()} kg (${Math.abs(porcentaje)}%). ¡Revisa tus hábitos!`;
+                clase = 'trend-up';
+            } else {
+                icono = '➖';
+                mensaje = 'Tu huella se ha mantenido igual. ¡Sigue trabajando para reducirla!';
+                clase = 'trend-neutral';
+            }
+            document.getElementById('mejoraTotal').innerHTML = `
+                ${icono} <span class="${clase}">${mensaje}</span>
+                <div style="font-size:0.8rem; color:#6f8e66; margin-top:0.3rem;">
+                    Primer registro: ${primero.toLocaleString()} kg · Último: ${ultimo.toLocaleString()} kg
+                </div>
+            `;
+        } else {
+            document.getElementById('mejoraTotal').innerHTML = '💪 Agrega más registros para ver tu evolución en el tiempo.';
+        }
+
+        // --- Tendencia texto ---
+        if (registros.length >= 2) {
+            const primero = totales[0];
+            const ultimo = totales[totales.length - 1];
+            if (ultimo < primero) {
+                document.getElementById('tendenciaTexto').textContent = '📉 ¡Tendencia positiva! Estás reduciendo tu huella de carbono.';
+            } else if (ultimo > primero) {
+                document.getElementById('tendenciaTexto').textContent = '📈 Tendencia al alza. ¡Necesitas mejorar tus hábitos!';
+            } else {
+                document.getElementById('tendenciaTexto').textContent = '➖ Tu huella se mantiene estable.';
+            }
+        } else {
+            document.getElementById('tendenciaTexto').textContent = '📊 Agrega más registros para ver tendencias.';
+        }
+
+        // --- Gráfica ---
+        actualizarGrafica(registros);
+    }
+
+    // ============================================
+    // GRÁFICA CON CHART.JS
+    // ============================================
+    function actualizarGrafica(datos) {
+        const ctx = document.getElementById('huellaChart').getContext('2d');
+        
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        if (datos.length === 0) {
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Sin datos'],
+                    datasets: [{
+                        label: 'Huella de Carbono (kg CO₂e)',
+                        data: [0],
+                        borderColor: '#7cb342',
+                        backgroundColor: 'rgba(124, 179, 66, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#7cb342',
+                        pointRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' kg CO₂e';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' kg';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            return;
+        }
+
+        // Preparar datos para la gráfica
+        const labels = datos.map((r, index) => {
+            const fecha = new Date(r.guardado || r.fecha);
+            return `${index + 1} (${fecha.toLocaleDateString('es-ES')})`;
+        });
+
+        const valores = datos.map(r => r.total || calcularTotal(r));
+
+        // Colores según tendencia
+        const colors = valores.map((v, i) => {
+            if (i === 0) return '#7cb342';
+            if (v < valores[i-1]) return '#5cb85c';
+            if (v > valores[i-1]) return '#d9534f';
+            return '#f0ad4e';
+        });
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Huella de Carbono (kg CO₂e)',
+                    data: valores,
+                    borderColor: '#2c7a47',
+                    backgroundColor: (context) => {
+                        const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 350);
+                        gradient.addColorStop(0, 'rgba(44, 122, 71, 0.3)');
+                        gradient.addColorStop(1, 'rgba(44, 122, 71, 0.02)');
+                        return gradient;
+                    },
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: colors,
+                    pointBorderColor: '#1e3a2f',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const index = context.dataIndex;
+                                let mensaje = value.toLocaleString() + ' kg CO₂e';
+                                if (index > 0) {
+                                    const anterior = context.dataset.data[index-1];
+                                    if (value < anterior) {
+                                        mensaje += ' 📉 (mejoró)';
+                                    } else if (value > anterior) {
+                                        mensaje += ' 📈 (empeoró)';
+                                    } else {
+                                        mensaje += ' ➖ (igual)';
+                                    }
+                                }
+                                return mensaje;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' kg';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            maxRotation: 45,
+                            font: { size: 10 }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // MODAL DE EDICIÓN
+    // ============================================
+    function abrirModalEditar(id) {
+        const registro = registros.find(r => r.id == id);
+        if (!registro) return;
+
+        idEditando = id;
+        const modal = document.getElementById('modalEditar');
+        modal.classList.add('active');
+
+        // Llenar formulario
+        document.getElementById('editFecha').value = registro.guardado || registro.fecha || '';
+        document.getElementById('editKmCoche').value = registro.kmCoche || 0;
+        document.getElementById('editKmMoto').value = registro.kmMoto || 0;
+        document.getElementById('editHorasVuelo').value = registro.horas || 0;
+        document.getElementById('editElectricidad').value = registro.kwhMes || 0;
+        document.getElementById('editDieta').value = registro.dietaTipo || 'media';
+        
+        // Calcular total
+        actualizarTotalEditar();
+        
+        // Añadir event listeners para recalcular
+        ['editKmCoche', 'editKmMoto', 'editHorasVuelo', 'editElectricidad', 'editDieta'].forEach(id => {
+            document.getElementById(id).addEventListener('change', actualizarTotalEditar);
+            document.getElementById(id).addEventListener('input', actualizarTotalEditar);
+        });
+    }
+
+    function actualizarTotalEditar() {
+        const datos = obtenerDatosFormularioEditar();
+        const total = calcularTotal(datos);
+        document.getElementById('editTotal').value = total.toLocaleString() + ' kg CO₂e';
+        return total;
+    }
+
+    function obtenerDatosFormularioEditar() {
+        return {
+            kmCoche: parseFloat(document.getElementById('editKmCoche').value) || 0,
+            kmMoto: parseFloat(document.getElementById('editKmMoto').value) || 0,
+            horas: parseFloat(document.getElementById('editHorasVuelo').value) || 0,
+            kwhMes: parseFloat(document.getElementById('editElectricidad').value) || 0,
+            dietaTipo: document.getElementById('editDieta').value
+        };
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalEditar').classList.remove('active');
+        idEditando = null;
+    }
+
+    // ============================================
+    // GUARDAR EDICIÓN
+    // ============================================
+    document.getElementById('formEditar').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const index = registros.findIndex(r => r.id == idEditando);
+        if (index === -1) return;
+
+        const datosForm = obtenerDatosFormularioEditar();
+        const total = calcularTotal(datosForm);
+        
+        registros[index] = {
+            ...registros[index],
+            ...datosForm,
+            total: total,
+            guardado: document.getElementById('editFecha').value || new Date().toISOString(),
+            editado: true,
+            fechaEdicion: new Date().toISOString()
+        };
+
+        guardarDatos();
+        cerrarModal();
+        actualizarUI();
+        mostrarNotificacion('✅ Registro actualizado correctamente');
+    });
+
+    // ============================================
+    // ELIMINAR REGISTRO
+    // ============================================
+    function eliminarRegistro(id) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este registro?')) return;
+        
+        registros = registros.filter(r => r.id != id);
+        guardarDatos();
+        actualizarUI();
+        mostrarNotificacion('🗑️ Registro eliminado');
+    }
+
+    function borrarTodosLosRegistros() {
+        if (!confirm('⚠️ ¿Estás seguro de que quieres borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
+        if (!confirm('Confirmación final: ¿Borrar todos los datos de huella de carbono?')) return;
+        
+        registros = [];
+        guardarDatos();
+        actualizarUI();
+        mostrarNotificacion('🗑️ Todos los registros han sido eliminados');
+    }
+
+    // ============================================
+    // EXPORTAR CSV
+    // ============================================
+    function exportarDatos() {
+        if (registros.length === 0) {
+            alert('No hay datos para exportar.');
+            return;
+        }
+
+        let csv = 'Fecha,Total(kg),Coche(km),Moto(km),Vuelos(h),Electricidad(kWh),Dieta\n';
+        registros.forEach(r => {
+            const fecha = new Date(r.guardado || r.fecha).toLocaleString('es-ES');
+            csv += `"${fecha}",${r.total || calcularTotal(r)},${r.kmCoche || 0},${r.kmMoto || 0},${r.horas || 0},${r.kwhMes || 0},"${r.dietaTipo || 'media'}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `huella_carbono_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        mostrarNotificacion('📊 Datos exportados correctamente');
+    }
+
+    // ============================================
+    // NOTIFICACIONES
+    // ============================================
+    function mostrarNotificacion(mensaje) {
+        const notif = document.createElement('div');
+        notif.style.cssText = `
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e3a2f;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1.2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 2000;
+            font-weight: 500;
+            animation: slideUp 0.3s ease;
+            max-width: 400px;
+        `;
+        notif.textContent = mensaje;
+        document.body.appendChild(notif);
+        setTimeout(() => {
+            notif.style.opacity = '0';
+            notif.style.transition = 'opacity 0.3s';
+            setTimeout(() => notif.remove(), 300);
+        }, 3000);
+    }
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+    window.addEventListener('DOMContentLoaded', () => {
+        cargarDatos();
+        // Recargar automáticamente cada 30 segundos (por si se guarda desde otra pestaña)
+        setInterval(cargarDatos, 30000);
+    });
+
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            cerrarModal();
+        }
+    });
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modalEditar').addEventListener('click', function(e) {
+        if (e.target === this) {
+            cerrarModal();
+        }
+    });
+</script>
+</body>
+</html>
